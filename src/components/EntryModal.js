@@ -11,10 +11,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
-import { useState } from 'react';
+import {useState } from 'react';
 import { categories } from '../utils/categories';
-import { addEntry } from '../utils/mutations';
-
+import { addEntry, deleteEntry } from '../utils/mutations';
+import { updateEntry } from '../utils/mutations';
+import { QRCodeCanvas } from "qrcode.react";
 // Modal component for individual entries.
 
 /* EntryModal parameters:
@@ -67,17 +68,38 @@ export default function EntryModal({ entry, type, user }) {
    };
 
    // TODO: Add Edit Mutation Handler
+   // Made this to deal with updating the entry
+   const handleUpdate = () => {
+      const updatedEntry = {
+         name: name,
+         link: link,
+         description: description,
+         user: user?.displayName ? user?.displayName : "GenericUser",
+         category: category,
+         docId: entry.id,
+      };
+
+      updateEntry(updatedEntry).catch(console.error);
+      handleClose();
+   };
 
    // TODO: Add Delete Mutation Handler
+   const handleDelete = () => {
+      deleteEntry(entry.id).catch(console.error);
+      alert('Do you want to delete this entry?')
+      handleClose();
+   }
+   
 
    // Button handlers for modal opening and inside-modal actions.
    // These buttons are displayed conditionally based on if adding or editing/opening.
    // TODO: You may have to edit these buttons to implement editing/deleting functionality.
 
    const openButton =
-      type === "edit" ? <IconButton onClick={handleClickOpen}>
+      type === "edit" ? <><IconButton onClick={handleClickOpen}>
          <OpenInNewIcon />
       </IconButton>
+      </>
          : type === "add" ? <Button variant="contained" onClick={handleClickOpen}>
             Add entry
          </Button>
@@ -87,6 +109,8 @@ export default function EntryModal({ entry, type, user }) {
       type === "edit" ?
          <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleDelete}>Delete</Button>
+            <Button variant="contained" onClick={handleUpdate}>Update Entry</Button>
          </DialogActions>
          : type === "add" ?
             <DialogActions>
@@ -119,7 +143,7 @@ export default function EntryModal({ entry, type, user }) {
                   fullWidth
                   variant="standard"
                   value={link}
-                  onChange={(event) => setLink(event.target.value)}
+                  onChange={(event) => setLink(event.target.value)} 
                />
                <TextField
                   margin="normal"
@@ -132,6 +156,8 @@ export default function EntryModal({ entry, type, user }) {
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                />
+               {/* Cereates a QR code specific to the link the user enters */}
+               <QRCodeCanvas value={entry.link} />,
 
                <FormControl fullWidth sx={{ "margin-top": 20 }}>
                   <InputLabel id="demo-simple-select-label">Category</InputLabel>
