@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import './App.css';
 import EntryTable from './components/EntryTable';
 import EntryModal from './components/EntryModal';
+import WeatherModal from './components/WeatherModal';
 import { mainListItems } from './components/listItems';
 import { db, SignInScreen } from './utils/firebase';
 import { emptyEntry } from './utils/mutations';
@@ -127,6 +128,7 @@ export default function App() {
   function mainContent() {
     if (isSignedIn) {
       return (
+        <>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Stack direction="row" spacing={3}>
@@ -136,7 +138,7 @@ export default function App() {
           <Grid item xs={12}>
             <EntryTable entries={entries} />
           </Grid>
-        </Grid>
+        </Grid> <WeatherModal></WeatherModal></>
       )
     } else return (
       <SignInScreen></SignInScreen>
